@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion sdk
+
+
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 8
+        versionCode 1
+        versionName "1.0"
+    }
+
+}
+
+dependencies {
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "com.google.code.gson:gson:$gson"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+}
