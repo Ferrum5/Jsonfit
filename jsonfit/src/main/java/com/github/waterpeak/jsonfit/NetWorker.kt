@@ -37,9 +37,7 @@ fun <T : JResponse> JCall<T>.builder() = builder(null)
 fun <T : JResponse> JCall<T>.builder(worker: INetWorker?): INetBuilder<T> =
     NetBuilder(this).apply { if (worker != null) worker(worker) }
 
-class NetBuilder<T : JResponse>(
-    private val call: JCall<T>
-) : INetBuilder<T>, IResponseListener<T> {
+class NetBuilder<T : JResponse>(private val call: JCall<T>) : INetBuilder<T>, IResponseListener<T> {
 
 
     private var loadingPrompt: ILoadingPrompt? = null

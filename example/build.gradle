@@ -1,0 +1,28 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+android {
+    compileSdkVersion sdk
+
+
+
+    defaultConfig {
+        applicationId "com.github.waterpeak.jsonfit.example"
+        minSdkVersion 14
+        targetSdkVersion sdk
+        versionCode 1
+        versionName "1.0"
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation project(':jsonfit')
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "com.google.code.gson:gson:$gson"
+}

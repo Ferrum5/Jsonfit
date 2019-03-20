@@ -1,17 +1,20 @@
 package com.github.waterpeak.jsonfit
 
-import androidx.annotation.Keep
-
 const val RESPONSE_CODE_SUCCESS = 100
 
 const val RESPONSE_HTTP_UNKNOWN = -1
 const val RESPONSE_HTTP_OVERTIME = -2
 const val RESPONSE_HTTP_EXCEPTION = -3
 
-@Keep
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class JsonKey(val key: String)
+
 open class JResponse(
+    @JsonKey("code")
     var code: Int,
     var httpCode: Int,
+    @JsonKey("message")
     var message: String?
 ) {
     val success: Boolean
@@ -28,16 +31,15 @@ open class JResponse(
     }
 }
 
-@Keep
 open class JResponseTyped<T>(
     code: Int,
     httpCode: Int,
     message: String?
 ) : JResponse(code, httpCode, message) {
+    @JsonKey("content")
     var content: T? = null
 }
 
-@Keep
 class JResponseRawString(
     code: Int,
     httpCode: Int,

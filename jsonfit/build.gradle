@@ -19,5 +19,4 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.google.code.gson:gson:$gson"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
 }

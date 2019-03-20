@@ -10,6 +10,7 @@ import java.lang.Exception
 import java.lang.ref.WeakReference
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import kotlin.reflect.full.findAnnotation
 
 interface IResponseListener<T : JResponse> {
     fun onResponse(response: T)
@@ -63,19 +64,19 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
                     if (returnType == JResponse::class.java) {
                         callOnMain(
                             JResponse(
-                                json.optInt(JResponse::code.name, response.code()),
+                                json.optInt(JResponse::code.findAnnotation<JsonKey>()!!.key, response.code()),
                                 response.code(),
-                                json.optString(JResponse::message.name, null)
+                                json.optString(JResponse::message.findAnnotation<JsonKey>()!!.key, null)
                             )
                         )
                     } else {
                         val contentType = (returnType as ParameterizedType).actualTypeArguments[0]
                         val rp = JResponseTyped<Any>(
-                            json.optInt(JResponse::code.name, -1),
+                            json.optInt(JResponse::code.findAnnotation<JsonKey>()!!.key, -1),
                             response.code(),
-                            json.optString(JResponse::message.name, null)
+                            json.optString(JResponse::message.findAnnotation<JsonKey>()!!.key, null)
                         )
-                        val contentKey = JResponseTyped<Any>::content.name
+                        val contentKey = JResponseTyped<Any>::content.findAnnotation<JsonKey>()!!.key
                         if (rp.businessSuccess)
                             rp.content = when (contentType) {
                                 Void::class.java -> null

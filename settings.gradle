@@ -1,1 +1,1 @@
-include ':app', ':jsonfit'
+include ':jsonfit', ':example'
