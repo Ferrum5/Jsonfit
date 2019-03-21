@@ -1,5 +1,5 @@
 package com.github.waterpeak.jsonfit
 
-interface ILoadingPrompt {
+interface ILoadingPromptController {
     fun showLoading(show: Boolean)
 }

@@ -27,7 +27,7 @@ class NetWorker : INetWorker {
 }
 
 interface INetBuilder<T : JResponse> {
-    fun loadingPromptControl(loadingPrompt: ILoadingPrompt?): INetBuilder<T>
+    fun loadingPromptControl(loadingPromptController: ILoadingPromptController?): INetBuilder<T>
     fun worker(worker: INetWorker): INetBuilder<T>
     fun enQueue(callback: (T) -> Unit)
     fun bindView(view: View): INetBuilder<T>
@@ -40,14 +40,14 @@ fun <T : JResponse> JCall<T>.builder(worker: INetWorker?): INetBuilder<T> =
 class NetBuilder<T : JResponse>(private val call: JCall<T>) : INetBuilder<T>, IResponseListener<T> {
 
 
-    private var loadingPrompt: ILoadingPrompt? = null
+    private var loadingPromptController: ILoadingPromptController? = null
     private var mWorker: INetWorker? = null
     private var clickableView: WeakReference<View>? = null
 
     private lateinit var callback: (T) -> Unit
 
-    override fun loadingPromptControl(loadingPrompt: ILoadingPrompt?): INetBuilder<T> {
-        this.loadingPrompt = loadingPrompt
+    override fun loadingPromptControl(loadingPromptController: ILoadingPromptController?): INetBuilder<T> {
+        this.loadingPromptController = loadingPromptController
         return this
     }
 
@@ -69,7 +69,7 @@ class NetBuilder<T : JResponse>(private val call: JCall<T>) : INetBuilder<T>, IR
 
     override fun onResponse(response: T) {
         mWorker?.removeCallbackReference(this)
-        loadingPrompt?.showLoading(false)
+        loadingPromptController?.showLoading(false)
         clickableView?.get()?.isClickable = true
         callback(response)
     }
