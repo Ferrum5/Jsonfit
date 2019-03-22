@@ -10,7 +10,6 @@ import java.lang.Exception
 import java.lang.ref.WeakReference
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
-import kotlin.reflect.full.findAnnotation
 
 interface IResponseListener<T : JResponse> {
     fun onResponse(response: T)
@@ -25,20 +24,12 @@ class ResponseWeakWrapperListener<T : JResponse>(listener: IResponseListener<T>)
 
 class JCallback<T : JResponse>(private val returnType: Type, private val listener: IResponseListener<T>) : Callback {
 
-   constructor(call: JCall<T>, listener: IResponseListener<T>):this(call.getReturnType(),listener)
+    constructor(call: JCall<T>, listener: IResponseListener<T>) : this(call.getReturnType(), listener)
 
     private fun createResponse(code: Int, http: Int, msg: String?): JResponse {
         return when (returnType) {
-            JResponse(code, http, msg) -> JResponse(
-                code,
-                http,
-                msg
-            )
-            JResponseRawString::class.java -> JResponseRawString(
-                code,
-                http,
-                msg
-            )
+            JResponse::class.java -> JResponse(code, http, msg)
+            JResponseRawString::class.java -> JResponseRawString(code, http, msg)
             else -> JResponseTyped<Any>(code, http, msg)
         }
     }
@@ -58,26 +49,28 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
             if (response.isSuccessful) {
                 val responseString = response.body()?.string()
                 if (returnType == JResponseRawString::class.java) { //raw类型
-                    callOnMain(JResponseRawString(100, response.code(), responseString))
+                    callOnMain(JResponseRawString(RESPONSE_CODE_SUCCESS, response.code(), responseString))
                 } else if (responseString != null) {
                     val json = JSONTokener(responseString).nextValue() as JSONObject
                     if (returnType == JResponse::class.java) {
                         callOnMain(
                             JResponse(
-                                json.optInt(JResponse::code.findAnnotation<JsonKey>()!!.key, response.code()),
+                                json.optInt(JpiHandler.jsonKeyCode,RESPONSE_CODE_UNKNOWN),
                                 response.code(),
-                                json.optString(JResponse::message.findAnnotation<JsonKey>()!!.key, null)
+                                json.optString(JpiHandler.jsonKeyMessage, null)
                             )
                         )
                     } else {
                         val contentType = (returnType as ParameterizedType).actualTypeArguments[0]
                         val rp = JResponseTyped<Any>(
-                            json.optInt(JResponse::code.findAnnotation<JsonKey>()!!.key, -1),
+                            json.optInt(JpiHandler.jsonKeyCode, -1),
                             response.code(),
-                            json.optString(JResponse::message.findAnnotation<JsonKey>()!!.key, null)
+                            json.optString(JpiHandler.jsonKeyMessage, null)
                         )
-                        val contentKey = JResponseTyped<Any>::content.findAnnotation<JsonKey>()!!.key
-                        if (rp.businessSuccess)
+
+                        if (rp.businessSuccess) {
+                            val contentKey = JpiHandler.jsonKeyContent
+                            android.util.Log.i("Jsonfit","contentkey=$contentKey")
                             rp.content = when (contentType) {
                                 Void::class.java -> null
                                 String::class.java,
@@ -101,6 +94,7 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
                                     JpiHandler.jsonConverter?.fromJson(it, contentType)
                                 }
                             }
+                        }
                         callOnMain(rp)
                     }
                 } else {
@@ -111,6 +105,7 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
 
             }
         } catch (e: Exception) {
+            android.util.Log.e("Jsonfit","parse error",e)
             callOnMain(createResponse(-1, RESPONSE_HTTP_EXCEPTION, "Error occur:${e.message}"))
         }
     }

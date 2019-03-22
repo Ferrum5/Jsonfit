@@ -15,6 +15,9 @@ typealias CallRaw = JCall<JResponseRawString>
 private val mediaTypeJson = MediaType.parse("application/json")
 
 object JpiHandler{
+    var jsonKeyCode = "code"
+    var jsonKeyMessage = "message"
+    var jsonKeyContent = "content"
     var client: OkHttpClient? = null
     var jsonConverter: JsonConverter? = null
     var mainExecutor: Executor? = null
