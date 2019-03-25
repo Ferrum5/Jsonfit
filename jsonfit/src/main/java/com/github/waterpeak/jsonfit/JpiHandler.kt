@@ -14,7 +14,7 @@ typealias CallRaw = JCall<JResponseRawString>
 
 private val mediaTypeJson = MediaType.parse("application/json")
 
-object JpiHandler{
+object JpiHandler {
     var jsonKeyCode = "code"
     var jsonKeyMessage = "message"
     var jsonKeyContent = "content"
@@ -22,9 +22,11 @@ object JpiHandler{
     var jsonConverter: JsonConverter? = null
     var mainExecutor: Executor? = null
 
-    fun initHandler(client: OkHttpClient,
-                    json: JsonConverter,
-                    mainExecutor: Executor){
+    fun initHandler(
+        client: OkHttpClient,
+        json: JsonConverter,
+        mainExecutor: Executor
+    ) {
         this.client = client
         this.jsonConverter = json
         this.mainExecutor = mainExecutor
@@ -107,16 +109,15 @@ class InvocationHandlerImpl(
         params: List<KeyValue>
     ): Request {
         val jsonString = if (params.size == 1 && params[0].key.isBody) {
-            JpiHandler.jsonConverter?.toJson(params[0].value)?:"{}"
+            JpiHandler.jsonConverter?.toJson(params[0].value) ?: "{}"
         } else {
             val obj = JSONObject()
-            params.forEach { (k, v) ->
-                when {
-                    v is List<*> -> obj.put(k.name, JpiHandler.jsonConverter?.toJson(v))
-                    v is Array<*> -> obj.put(k.name, JpiHandler.jsonConverter?.toJson(v))
+            for ((k, v) in params) {
+                when (v) {
+                    is List<*> -> obj.put(k.name, JpiHandler.jsonConverter?.toJson(v))
+                    is Array<*> -> obj.put(k.name, JpiHandler.jsonConverter?.toJson(v))
                     else -> obj.put(k.name, v)
                 }
-
             }
             obj.toString()
         }
@@ -131,7 +132,7 @@ class InvocationHandlerImpl(
 
     private fun form(path: String, method: String, params: List<KeyValue>): Request {
         val requestBodyBuilder = FormBody.Builder()
-        params.forEach { (k, v) ->
+        for ((k, v) in params) {
             requestBodyBuilder.add(k.name, v.toString())
         }
         return Request.Builder()
@@ -142,7 +143,7 @@ class InvocationHandlerImpl(
 
     private fun multipart(path: String, params: List<KeyValue>): Request {
         val builder = MultipartBody.Builder()
-        params.forEach { (k, v) ->
+        for((k,v) in params){
             when (v) {
                 is RequestBody -> builder.addPart(v)
                 is MultipartFile -> builder.addFormDataPart(k.name, v.filename, v.body)
