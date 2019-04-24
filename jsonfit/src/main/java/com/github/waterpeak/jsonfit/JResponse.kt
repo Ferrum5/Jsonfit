@@ -1,6 +1,7 @@
 package com.github.waterpeak.jsonfit
 
-const val RESPONSE_CODE_SUCCESS = 100
+val RESPONSE_CODE_SUCCESS: Int
+    get() = JpiHandler.successCode
 const val RESPONSE_CODE_UNKNOWN = 0
 
 const val RESPONSE_HTTP_UNKNOWN = -1
@@ -17,7 +18,7 @@ open class JResponse(
         get() = code == RESPONSE_CODE_SUCCESS && httpSuccess
 
     val businessSuccess: Boolean
-    get() = code == RESPONSE_CODE_SUCCESS
+        get() = code == RESPONSE_CODE_SUCCESS
 
     val httpSuccess: Boolean
         get() = httpCode in 200..299

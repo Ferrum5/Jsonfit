@@ -21,6 +21,7 @@ object JpiHandler {
     var client: OkHttpClient? = null
     var jsonConverter: JsonConverter? = null
     var mainExecutor: Executor? = null
+    var successCode = 100
 
     fun initHandler(
         client: OkHttpClient,
@@ -96,7 +97,7 @@ class InvocationHandlerImpl(
         val url2 = "$rootUrl$url"
         val request = when (requestMethod) {
             is Json -> json(url2, params)
-            is Get -> form(url2, "GET", params)
+            is Get -> get(url2, params)
             is Multipart -> multipart(url2, params)
             else -> form(url2, "POST", params)
         }
@@ -129,6 +130,16 @@ class InvocationHandlerImpl(
             .build()
     }
 
+    private fun get(path: String, params: List<KeyValue>): Request{
+        val url = HttpUrl.parse(path)!!.newBuilder()
+        for ((k, v) in params) {
+            url.addQueryParameter(k.name, v.toString())
+        }
+        return Request.Builder()
+            .url(url.build())
+            .get()
+            .build()
+    }
 
     private fun form(path: String, method: String, params: List<KeyValue>): Request {
         val requestBodyBuilder = FormBody.Builder()
