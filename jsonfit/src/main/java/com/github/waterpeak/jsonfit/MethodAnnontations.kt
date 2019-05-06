@@ -12,7 +12,15 @@ annotation class Post(val path: String)
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
-annotation class Multipart(val path: String)
+annotation class Multipart(val path: String, val type: Int = FORM){
+    companion object{
+        const val MIXED = 1
+        const val ALTERNATIVE = 2
+        const val DIGEST = 3
+        const val PARALLEL = 4
+        const val FORM = 0
+    }
+}
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)

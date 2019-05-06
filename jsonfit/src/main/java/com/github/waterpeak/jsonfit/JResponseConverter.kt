@@ -55,7 +55,7 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
                     if (returnType == JResponse::class.java) {
                         callOnMain(
                             JResponse(
-                                json.optInt(JpiHandler.jsonKeyCode,RESPONSE_CODE_UNKNOWN),
+                                json.optInt(JpiHandler.jsonKeyCode, RESPONSE_CODE_UNKNOWN),
                                 response.code(),
                                 json.optString(JpiHandler.jsonKeyMessage, null)
                             )
@@ -70,7 +70,7 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
 
                         if (rp.businessSuccess) {
                             val contentKey = JpiHandler.jsonKeyContent
-                            android.util.Log.i("Jsonfit","contentkey=$contentKey")
+                            android.util.Log.i("Jsonfit", "contentkey=$contentKey")
                             rp.content = when (contentType) {
                                 Void::class.java -> null
                                 String::class.java,
@@ -105,13 +105,17 @@ class JCallback<T : JResponse>(private val returnType: Type, private val listene
 
             }
         } catch (e: Exception) {
-            android.util.Log.e("Jsonfit","parse error",e)
+            android.util.Log.e("Jsonfit", "parse error", e)
             callOnMain(createResponse(-1, RESPONSE_HTTP_EXCEPTION, "Error occur:${e.message}"))
         }
     }
 
     private fun callOnMain(response: JResponse) {
-        JpiHandler.mainExecutor?.execute { listener.onResponse(response as T) }
+        JpiHandler.mainExecutor?.execute {
+            listener.onResponse(response as T)
+            JpiHandler.jResponseInterceptor?.invoke(response)
+        }
+
     }
 
 }

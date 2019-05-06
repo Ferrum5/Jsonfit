@@ -1,5 +1,6 @@
 package com.github.waterpeak.jsonfit
 
+import com.google.gson.reflect.TypeToken
 import okhttp3.*
 import java.lang.reflect.Type
 
@@ -7,6 +8,11 @@ interface JCall<T> {
     fun getReturnType(): Type
     fun enqueue(callback: Callback)
 }
+
+inline fun <reified T> Request.toJCall(): JCall<T>{
+    return JCallImpl(object: TypeToken<T>(){}.type, this) as JCall<T>
+}
+
 
 class JCallImpl(
     private val returnType: Type,
