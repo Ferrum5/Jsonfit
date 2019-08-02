@@ -2,6 +2,7 @@ package com.github.waterpeak.jsonfit
 
 import android.os.Build
 import okhttp3.*
+import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.*
 import java.util.concurrent.Executor
@@ -123,8 +124,24 @@ class InvocationHandlerImpl(
             val obj = JSONObject()
             for ((k, v) in params) {
                 when {
-                    v is List<*> -> obj.put(k.name, JpiHandler.jsonConverter?.toJson(v))
-                    v is Array<*> -> obj.put(k.name, JpiHandler.jsonConverter?.toJson(v))
+                    v is List<*> -> {
+                        val jArray = JSONArray()
+                        for(i in v){
+                            if(i!=null){
+                                jArray.put(i)
+                            }
+                        }
+                        obj.put(k.name, jArray)
+                    }
+                    v is Array<*> -> {
+                        val jArray = JSONArray()
+                        for(i in v){
+                            if(i!=null){
+                                jArray.put(i)
+                            }
+                        }
+                        obj.put(k.name, jArray)
+                    }
                     else -> obj.put(k.name, v)
                 }
             }
