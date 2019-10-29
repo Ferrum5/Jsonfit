@@ -10,7 +10,6 @@ android {
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 8
         versionCode 1
         versionName "1.0"
     }
@@ -23,7 +22,4 @@ dependencies {
     implementation "com.google.code.gson:gson:$gson"
     implementation "androidx.core:core-ktx:1.0.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
 }
